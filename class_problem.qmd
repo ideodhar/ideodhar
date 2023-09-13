@@ -1,0 +1,74 @@
+---
+title: "Class Problem"
+format: html
+editor: visual
+---
+
+# Get 500 samples of 100 observations from Auto, build regression and plot the distribution of the coefficients.
+
+## Loading the packages
+
+```{r}
+#| warning: false
+
+library(ISLR2)
+library(tidyverse)
+```
+
+creating an empty list to store samples & generating 500 samples and saving them as individual lists withib the list
+
+```{r}
+sample_list <- list()
+
+for(i in 1:500) { sample_list[[i]] <- sample_n(Auto, 100) }
+```
+
+Repeating the same to get the estimators. I am saving the extracted coefficients in a dataframe to make it more user friendly for me. I am more comfortable with dataframe. I know I saved it as a list first but its ok as long as my code works.
+
+```{r}
+
+estimators <- list()
+
+for (i in 1:length(sample_list)) {
+  sample_data <- data.frame(sample_list[[i]])
+  m <- lm(horsepower ~ weight, data = sample_data)
+  estimators[[i]] <- m$coefficients
+  estimators <- data.frame(matrix(unlist(estimators), ncol = length(estimators), byrow = FALSE))
+}
+```
+
+Df estimators has 500 columns(from the 500 samples) and has two rows, first row is the intercept and second is the slope
+```{r}
+#| echo: true
+
+head(estimators)[1:5]
+```
+
+Transposing the dataframe and naming the cols as their respective coeff name.
+
+```{r}
+coeffx <- data.frame(t(estimators))
+colnames(coeffx)[1] <- "intercept"
+colnames(coeffx)[2] <- "slope"
+```
+
+```{r}
+head(coeffx, 5)
+```
+
+FINALLY, plotting the coeffs distribution. I didnt remember which one we had to plot so i did both.
+
+```{r}
+#| echo: true
+
+plot(density(coeffx$intercept), main = "Density Plot of Intercept Coeff")
+plot(density(coeffx$slope), main = "Density Plot of Slope Coeff")
+```
+I dont remember the instructions so I also found out the averages of the coeffs.
+
+```{r}
+#| echo: true
+
+mean(coeffx$intercept)
+mean(coeffx$slope)
+```
